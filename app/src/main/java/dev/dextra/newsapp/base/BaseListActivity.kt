@@ -1,7 +1,6 @@
 package dev.dextra.newsapp.base
 
 import android.app.Dialog
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -48,7 +47,7 @@ abstract class BaseListActivity : AppCompatActivity() {
 
     private var loadingDialog: Dialog? = null
 
-    fun showLoading(context: Context) {
+    fun showLoading() {
         if (loadingDialog == null) {
             initDialog()
         }
@@ -86,7 +85,7 @@ abstract class BaseListActivity : AppCompatActivity() {
 
     protected val networkStateObserver = Observer<NetworkState> { networkState ->
         if (NetworkState.RUNNING == networkState) {
-            showLoading(this)
+            showLoading()
         } else {
             hideLoading()
         }

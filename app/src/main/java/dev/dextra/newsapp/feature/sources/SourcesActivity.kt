@@ -10,7 +10,6 @@ import android.widget.LinearLayout.HORIZONTAL
 import android.widget.LinearLayout.VERTICAL
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Source
@@ -34,27 +33,28 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
     override val mainList: View
         get() = sources_list
 
-    val sourcesViewModel: SourcesViewModel by inject()
+    private val sourcesViewModel: SourcesViewModel by inject()
 
     private var viewAdapter: SourcesListAdapter = SourcesListAdapter(this)
-    private var viewManager: RecyclerView.LayoutManager = GridLayoutManager(this, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_sources)
-        setupView()
-        loadSources()
         super.onCreate(savedInstanceState)
+        configureAutocompletes()
+        setupList()
+        loadSources()
     }
 
     private fun setupList() {
         sources_list.apply {
             setHasFixedSize(true)
-            layoutManager = viewManager
             adapter = viewAdapter
+            layoutManager = GridLayoutManager(context, 1)
         }
     }
 
     private fun loadSources() {
+        showLoading()
         sourcesViewModel.sources.observe(this, Observer {
             viewAdapter.apply {
                 clear()
@@ -64,6 +64,7 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
                 sources_list.scrollToPosition(0)
                 app_bar.setExpanded(true)
             }
+            hideLoading()
         })
 
         sourcesViewModel.networkState.observe(this, networkStateObserver)
@@ -71,20 +72,16 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
         sourcesViewModel.loadSources()
     }
 
-    private fun setupView() {
-        configureAutocompletes()
-        setupList()
-    }
-
     private fun configureAutocompletes() {
-        val countryAdapter = CustomArrayAdapter(
-            this,
-            R.layout.select_item,
-            Country.values().toMutableList()
+        country_select.setAdapter(
+            CustomArrayAdapter(
+                this,
+                R.layout.select_item,
+                Country.values().toMutableList()
+            )
         )
-        country_select.setAdapter(countryAdapter)
-        country_select.keyListener = null
-        country_select.setOnItemClickListener { parent, view, position, id ->
+        country_select.setText(Country.ALL.getRes())
+        country_select.setOnItemClickListener { parent, _, position, _ ->
             val item = parent.getItemAtPosition(position)
             if (item is Country) {
                 sourcesViewModel.changeCountry(item)
@@ -98,8 +95,8 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
                 Category.values().toMutableList()
             )
         )
-        category_select.keyListener = null
-        category_select.setOnItemClickListener { parent, view, position, id ->
+        category_select.setText(Category.ALL.getRes())
+        category_select.setOnItemClickListener { parent, _, position, _ ->
             val item = parent.getItemAtPosition(position)
             if (item is Category) {
                 sourcesViewModel.changeCategory(item)

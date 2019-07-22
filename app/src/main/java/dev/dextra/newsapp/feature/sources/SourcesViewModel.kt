@@ -8,7 +8,9 @@ import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.BaseViewModel
 import dev.dextra.newsapp.base.NetworkState
 
-class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
+class SourcesViewModel(
+    private val newsRepository: NewsRepository
+) : BaseViewModel() {
 
     val sources = MutableLiveData<List<Source>>()
     val networkState = MutableLiveData<NetworkState>()
@@ -20,8 +22,8 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
         networkState.postValue(NetworkState.RUNNING)
         addDisposable(
             newsRepository.getSources(
-                selectedCountry!!.name.toLowerCase(),
-                selectedCategory!!.name.toLowerCase()
+                selectedCountry?.name?.toLowerCase(),
+                selectedCategory?.name?.toLowerCase()
             ).subscribe({
                 sources.postValue(it.sources)
                 if (it.sources.isEmpty()) {
@@ -36,13 +38,13 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
     }
 
     fun changeCountry(country: Country?) {
-        if (Country.ALL.equals(country)) selectedCountry = null
+        if (Country.ALL == country) selectedCountry = null
         else selectedCountry = country
         loadSources()
     }
 
     fun changeCategory(category: Category) {
-        if (Category.ALL.equals(category)) selectedCategory = null
+        if (Category.ALL == category) selectedCategory = null
         else selectedCategory = category
         loadSources()
     }

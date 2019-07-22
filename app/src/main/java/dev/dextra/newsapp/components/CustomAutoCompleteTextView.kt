@@ -11,13 +11,9 @@ import androidx.core.content.ContextCompat
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.enums.BaseDataEnum
 
-class CustomAutoCompleteTextView : AppCompatAutoCompleteTextView {
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
+class CustomAutoCompleteTextView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : AppCompatAutoCompleteTextView(context, attrs, defStyleAttr) {
 
     override fun convertSelectionToString(selectedItem: Any?): CharSequence {
         if (selectedItem is BaseDataEnum) {
